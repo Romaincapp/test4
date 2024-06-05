@@ -8,12 +8,18 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
     <style>
         #map { height: 100vh; }
+        .leaflet-control-locate {
+            background: white;
+            padding: 5px;
+        }
     </style>
 </head>
 <body>
     <div id="map"></div>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script src="https://unpkg.com/leaflet.locatecontrol/dist/L.Control.Locate.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
     <script>
         // Initialisation de la carte
         var map = L.map('map').setView([50.411, 4.444], 13);
@@ -24,16 +30,23 @@
 
         // Les 5 lieux intéressants à Charleroi
         var lieux = [
-            {lat: 50.41136, lng: 4.44448, popup: "Lieu 1 : Hôtel de Ville"},
+            {lat: 50.41136, lng: 4.44448, popup: "Lieu 1 : Hôtel de Ville", color: "green"},
             {lat: 50.41442, lng: 4.44899, popup: "Lieu 2 : Musée de la Photographie"},
             {lat: 50.41002, lng: 4.45063, popup: "Lieu 3 : Beffroi de Charleroi"},
             {lat: 50.40761, lng: 4.44417, popup: "Lieu 4 : Parc Reine Astrid"},
-            {lat: 50.41221, lng: 4.43891, popup: "Lieu 5 : Centre de la bande dessinée"}
+            {lat: 50.41221, lng: 4.43891, popup: "Lieu 5 : Centre de la bande dessinée", color: "red"}
         ];
 
-        // Ajouter des marqueurs pour chaque lieu
+        // Ajouter des marqueurs pour chaque lieu avec des couleurs spécifiques
         lieux.forEach(function(lieu) {
-            L.marker([lieu.lat, lieu.lng]).addTo(map)
+            var markerOptions = {};
+            if (lieu.color) {
+                markerOptions.icon = L.icon({
+                    iconUrl: lieu.color === "green" ? 'https://path.to/green-icon.png' : 'https://path.to/red-icon.png',
+                    iconSize: [38, 38]
+                });
+            }
+            L.marker([lieu.lat, lieu.lng], markerOptions).addTo(map)
                 .bindPopup(lieu.popup);
         });
 
@@ -42,7 +55,31 @@
             waypoints: lieux.map(lieu => L.latLng(lieu.lat, lieu.lng)),
             routeWhileDragging: true,
             createMarker: function(i, wp, nWps) {
-                return L.marker(wp.latLng).bindPopup(lieux[i].popup);
+                var markerOptions = {};
+                if (lieux[i].color) {
+                    markerOptions.icon = L.icon({
+                        iconUrl: lieux[i].color === "green" ? 'https://path.to/green-icon.png' : 'https://path.to/red-icon.png',
+                        iconSize: [38, 38]
+                    });
+                }
+                return L.marker(wp.latLng, markerOptions).bindPopup(lieux[i].popup);
+            }
+        }).addTo(map);
+
+        // Ajout du contrôle de localisation
+        L.control.locate({
+            locateOptions: {
+                enableHighAccuracy: true
+            },
+            flyTo: true,
+            drawCircle: false,
+            markerStyle: {
+                opacity: 1,
+                fillOpacity: 1
+            },
+            icon: 'fa fa-map-marker',
+            strings: {
+                title: "Afficher ma position"
             }
         }).addTo(map);
     </script>
