@@ -74,7 +74,7 @@
         }).addTo(map);
 
         // Ajout du contrôle de localisation
-        L.control.locate({
+        var locateControl = L.control.locate({
             locateOptions: {
                 enableHighAccuracy: true
             },
@@ -89,6 +89,11 @@
                 title: "Afficher ma position"
             }
         }).addTo(map);
+
+        // Activer la géolocalisation dès le chargement de la page
+        map.on('load', function() {
+            locateControl.start();
+        });
     </script>
 </body>
 </html>
