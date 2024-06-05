@@ -37,14 +37,30 @@
             {lat: 50.41221, lng: 4.43891, popup: "Lieu 5 : Centre de la bande dessinée", color: "red"}
         ];
 
+        // Icônes personnalisées
+        var greenIcon = new L.Icon({
+            iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x-green.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+        var redIcon = new L.Icon({
+            iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
         // Ajouter des marqueurs pour chaque lieu avec des couleurs spécifiques
-        lieux.forEach(function(lieu) {
+        lieux.forEach(function(lieu, index) {
             var markerOptions = {};
             if (lieu.color) {
-                markerOptions.icon = L.icon({
-                    iconUrl: lieu.color === "green" ? 'https://path.to/green-icon.png' : 'https://path.to/red-icon.png',
-                    iconSize: [38, 38]
-                });
+                markerOptions.icon = (lieu.color === "green") ? greenIcon : redIcon;
             }
             L.marker([lieu.lat, lieu.lng], markerOptions).addTo(map)
                 .bindPopup(lieu.popup);
@@ -57,10 +73,7 @@
             createMarker: function(i, wp, nWps) {
                 var markerOptions = {};
                 if (lieux[i].color) {
-                    markerOptions.icon = L.icon({
-                        iconUrl: lieux[i].color === "green" ? 'https://path.to/green-icon.png' : 'https://path.to/red-icon.png',
-                        iconSize: [38, 38]
-                    });
+                    markerOptions.icon = (lieux[i].color === "green") ? greenIcon : redIcon;
                 }
                 return L.marker(wp.latLng, markerOptions).bindPopup(lieux[i].popup);
             }
