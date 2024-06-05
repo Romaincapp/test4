@@ -1,27 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Leaflet Map</title>
+    <title>Carte des lieux intéressants à Charleroi</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
     <style>
-        #map { height: 100%; }
+        #map { height: 100vh; }
     </style>
 </head>
 <body>
-    <div id="map" style="height: 600px;"></div>
+    <div id="map"></div>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
     <script>
-        var map = L.map('map').setView([51.505, -0.09], 13);
+        // Initialisation de la carte
+        var map = L.map('map').setView([50.411, 4.444], 13);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        var marker = L.marker([51.5, -0.09]).addTo(map)
-            .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
-            .openPopup();
+        // Les 5 lieux intéressants à Charleroi
+        var lieux = [
+            {lat: 50.41136, lng: 4.44448, popup: "Lieu 1 : Hôtel de Ville"},
+            {lat: 50.41442, lng: 4.44899, popup: "Lieu 2 : Musée de la Photographie"},
+            {lat: 50.41002, lng: 4.45063, popup: "Lieu 3 : Beffroi de Charleroi"},
+            {lat: 50.40761, lng: 4.44417, popup: "Lieu 4 : Parc Reine Astrid"},
+            {lat: 50.41221, lng: 4.43891, popup: "Lieu 5 : Centre de la bande dessinée"}
+        ];
+
+        // Ajouter des marqueurs pour chaque lieu
+        lieux.forEach(function(lieu) {
+            L.marker([lieu.lat, lieu.lng]).addTo(map)
+                .bindPopup(lieu.popup);
+        });
+
+        // Création de l'itinéraire avec leaflet-routing-machine
+        L.Routing.control({
+            waypoints: lieux.map(lieu => L.latLng(lieu.lat, lieu.lng)),
+            routeWhileDragging: true,
+            createMarker: function(i, wp, nWps) {
+                return L.marker(wp.latLng).bindPopup(lieux[i].popup);
+            }
+        }).addTo(map);
     </script>
 </body>
 </html>
