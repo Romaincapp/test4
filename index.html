@@ -30,55 +30,46 @@
 
         // Les 5 lieux intéressants à Charleroi
         var lieux = [
-            {lat: 50.41136, lng: 4.44448, popup: "Lieu 1 : Hôtel de Ville", icon: "start"},
+            {lat: 50.41136, lng: 4.44448, popup: "Lieu 1 : Hôtel de Ville"},
             {lat: 50.41442, lng: 4.44899, popup: "Lieu 2 : Musée de la Photographie"},
             {lat: 50.41002, lng: 4.45063, popup: "Lieu 3 : Beffroi de Charleroi"},
             {lat: 50.40761, lng: 4.44417, popup: "Lieu 4 : Parc Reine Astrid"},
-            {lat: 50.41221, lng: 4.43891, popup: "Lieu 5 : Centre de la bande dessinée", icon: "end"}
+            {lat: 50.41221, lng: 4.43891, popup: "Lieu 5 : Centre de la bande dessinée"}
         ];
 
-        // Icônes personnalisées
-        var startIcon = new L.Icon({
-            iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
-            iconSize: [38, 38],
-            iconAnchor: [19, 38],
-            popupAnchor: [0, -38]
-        });
+        // Icônes numérotées
+        var createNumberedIcon = function(number) {
+            return new L.DivIcon({
+                html: '<div style="background-color: blue; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">' + number + '</div>',
+                className: '',
+                iconSize: [30, 30],
+                iconAnchor: [15, 15]
+            });
+        };
 
-        var endIcon = new L.Icon({
-            iconUrl: 'https://cdn-icons-png.flaticon.com/512/149/149046.png',
-            iconSize: [38, 38],
-            iconAnchor: [19, 38],
-            popupAnchor: [0, -38]
-        });
-
-        // Ajouter des marqueurs pour chaque lieu avec des icônes spécifiques
-        lieux.forEach(function(lieu) {
-            var markerOptions = {};
-            if (lieu.icon === "start") {
-                markerOptions.icon = startIcon;
-            } else if (lieu.icon === "end") {
-                markerOptions.icon = endIcon;
-            }
+        // Ajouter des marqueurs numérotés pour chaque lieu
+        lieux.forEach(function(lieu, index) {
+            var markerOptions = {
+                icon: createNumberedIcon(index + 1)
+            };
             L.marker([lieu.lat, lieu.lng], markerOptions).addTo(map)
                 .bindPopup(lieu.popup);
         });
 
-        // Création de l'itinéraire avec leaflet-routing-machine
+        // Création de l'itinéraire piéton avec leaflet-routing-machine
         L.Routing.control({
             waypoints: lieux.map(lieu => L.latLng(lieu.lat, lieu.lng)),
             routeWhileDragging: true,
             lineOptions: {
                 styles: [{ color: 'blue', opacity: 0.6, weight: 6 }]
             },
+            router: new L.Routing.osrmv1({
+                profile: 'foot'
+            }),
             createMarker: function(i, wp, nWps) {
-                var markerOptions = {};
-                if (lieux[i].icon === "start") {
-                    markerOptions.icon = startIcon;
-                } else if (lieux[i].icon === "end") {
-                    markerOptions.icon = endIcon;
-                }
-                return L.marker(wp.latLng, markerOptions).bindPopup(lieux[i].popup);
+                return L.marker(wp.latLng, {
+                    icon: createNumberedIcon(i + 1)
+                }).bindPopup(lieux[i].popup);
             }
         }).addTo(map);
 
