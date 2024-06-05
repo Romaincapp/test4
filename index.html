@@ -30,37 +30,35 @@
 
         // Les 5 lieux intéressants à Charleroi
         var lieux = [
-            {lat: 50.41136, lng: 4.44448, popup: "Lieu 1 : Hôtel de Ville", color: "green"},
+            {lat: 50.41136, lng: 4.44448, popup: "Lieu 1 : Hôtel de Ville", icon: "start"},
             {lat: 50.41442, lng: 4.44899, popup: "Lieu 2 : Musée de la Photographie"},
             {lat: 50.41002, lng: 4.45063, popup: "Lieu 3 : Beffroi de Charleroi"},
             {lat: 50.40761, lng: 4.44417, popup: "Lieu 4 : Parc Reine Astrid"},
-            {lat: 50.41221, lng: 4.43891, popup: "Lieu 5 : Centre de la bande dessinée", color: "red"}
+            {lat: 50.41221, lng: 4.43891, popup: "Lieu 5 : Centre de la bande dessinée", icon: "end"}
         ];
 
         // Icônes personnalisées
-        var greenIcon = new L.Icon({
-            iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x-green.png',
-            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-            iconSize: [25, 41],
-            iconAnchor: [12, 41],
-            popupAnchor: [1, -34],
-            shadowSize: [41, 41]
+        var startIcon = new L.Icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+            iconSize: [38, 38],
+            iconAnchor: [19, 38],
+            popupAnchor: [0, -38]
         });
 
-        var redIcon = new L.Icon({
-            iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x-red.png',
-            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-            iconSize: [25, 41],
-            iconAnchor: [12, 41],
-            popupAnchor: [1, -34],
-            shadowSize: [41, 41]
+        var endIcon = new L.Icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/149/149046.png',
+            iconSize: [38, 38],
+            iconAnchor: [19, 38],
+            popupAnchor: [0, -38]
         });
 
-        // Ajouter des marqueurs pour chaque lieu avec des couleurs spécifiques
-        lieux.forEach(function(lieu, index) {
+        // Ajouter des marqueurs pour chaque lieu avec des icônes spécifiques
+        lieux.forEach(function(lieu) {
             var markerOptions = {};
-            if (lieu.color) {
-                markerOptions.icon = (lieu.color === "green") ? greenIcon : redIcon;
+            if (lieu.icon === "start") {
+                markerOptions.icon = startIcon;
+            } else if (lieu.icon === "end") {
+                markerOptions.icon = endIcon;
             }
             L.marker([lieu.lat, lieu.lng], markerOptions).addTo(map)
                 .bindPopup(lieu.popup);
@@ -70,10 +68,15 @@
         L.Routing.control({
             waypoints: lieux.map(lieu => L.latLng(lieu.lat, lieu.lng)),
             routeWhileDragging: true,
+            lineOptions: {
+                styles: [{ color: 'blue', opacity: 0.6, weight: 6 }]
+            },
             createMarker: function(i, wp, nWps) {
                 var markerOptions = {};
-                if (lieux[i].color) {
-                    markerOptions.icon = (lieux[i].color === "green") ? greenIcon : redIcon;
+                if (lieux[i].icon === "start") {
+                    markerOptions.icon = startIcon;
+                } else if (lieux[i].icon === "end") {
+                    markerOptions.icon = endIcon;
                 }
                 return L.marker(wp.latLng, markerOptions).bindPopup(lieux[i].popup);
             }
